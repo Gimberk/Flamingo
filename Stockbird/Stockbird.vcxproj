@@ -19,12 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Piece\MoveGeneration.cpp" />
     <ClCompile Include="src\Board\Board.cpp" />
     <ClCompile Include="src\Board\Fen.cpp" />
     <ClCompile Include="src\Stockbird.cpp" />
     <ClCompile Include="src\Util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Piece\MoveGeneration.h" />
     <ClInclude Include="src\Board\Fen.h" />
     <ClInclude Include="src\Board\Board.h" />
     <ClInclude Include="src\Util\Util.h" />

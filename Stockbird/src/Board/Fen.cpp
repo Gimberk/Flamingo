@@ -9,7 +9,7 @@
 /// Reads a fen and places pieces on the board
 /// </summary>
 /// <param name="fen"></param>
-void ReadFen(std::string fen, Board *board)
+void Fen::ReadFen(std::string fen, Board *board)
 {
 	std::vector<std::string> fenParts = Split(fen, ' ');
 	std::string base = fenParts[0];
