@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Util/Util.h"
+#include <map>
 
 class Piece
 {
@@ -37,6 +38,8 @@ public:
 	{
 		return directions;
 	}
+
+	char GetIdentifier() { return identifier; }
 
 	char ToString()
 	{
@@ -84,13 +87,13 @@ public:
 class Move
 {
 public:
-	Tile start;
-	Tile end;
+	int start;
+	int end;
 
-	Piece piece;
-	Piece takenPiece;
+	int piece;
+	int takenPiece;
 
-	Move(Tile start, Tile end, Piece piece, Piece takenPiece)
+	Move(int start, int end, int piece, int takenPiece)
 	{
 		this->start = start;
 		this->end = end;
@@ -98,16 +101,16 @@ public:
 		this->takenPiece = takenPiece;
 	}
 
-	std::string ToString()
+	bool Equals(Move other)
 	{
-		return "eeeee";
+		return other.end == end && other.start == start && other.piece == piece;
 	}
 };
 
 class Board
 {
 	std::vector<Tile> tiles;
-	std::vector<Piece> pieces;
+	std::map<int, Piece> pieces;
 public:
 	enum PieceType
 	{
@@ -121,11 +124,15 @@ public:
 
 	std::vector<Tile>* GetTiles() { return &tiles; }
 
-	std::vector<Piece>* GetPieces() { return &pieces; }
+	std::map<int, Piece>* GetPieces() { return &pieces; }
 
 	bool Contains(int index);
 
 	static std::vector<Tile> SetBoard();
+
+	void MakeMove(Move move);
+
+	void UnMakeMove(Move move);
 
 	Board() { tiles = SetBoard(); }
 };

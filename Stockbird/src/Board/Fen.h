@@ -7,4 +7,5 @@ class Fen
 {
 public:
 	static void ReadFen(std::string fen, Board* board);
+	static Board::PieceType ParsePieceType(char symbol);
 };

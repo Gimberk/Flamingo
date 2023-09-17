@@ -17,10 +17,24 @@ std::vector<Move> MoveGeneration::GenerateKingMoves(Piece piece, Board board)
 		int index = piece.tileIndex + dir;
 		if (!board.Contains(index)) continue;
 
+		if (IsFirstRank(piece.tileIndex))
+		{
+			if (dir == 7 || dir == -1 || dir == -9) continue;
+		}
+
+		if (IsEighthRank(piece.tileIndex))
+		{
+			if (dir == -7 || dir == 1 || dir == 9) continue;
+		}
+
 		Tile tile = (*board.GetTiles())[index];
 
-		std::cout << "Tile Exists: " << std::to_string(index) << std::endl;
-		Move move((*board.GetTiles())[piece.tileIndex], tile, piece, (*tile.GetPiece()));
+		if (tile.occupied)
+		{
+			if (tile.GetPiece()->color == piece.color) continue;
+		}
+
+		Move move(piece.tileIndex, tile.GetIndex(), piece.index, tile.GetPiece()->index);
 		legalMoves.push_back(move);
 	}
 	return legalMoves;
@@ -28,6 +42,6 @@ std::vector<Move> MoveGeneration::GenerateKingMoves(Piece piece, Board board)
 
 bool MoveGeneration::Contains(int index, std::vector<Move> moves)
 {
-	for (Move move : moves) if (move.end.GetIndex() == index) return true;
+	for (Move move : moves) if (move.end == index) return true;
 	return false;
 }

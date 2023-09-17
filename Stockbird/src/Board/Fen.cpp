@@ -14,8 +14,6 @@ void Fen::ReadFen(std::string fen, Board *board)
 	std::vector<std::string> fenParts = Split(fen, ' ');
 	std::string base = fenParts[0];
 
-    std::map<char, Board::PieceType> pieces{ {'k', Board::King} };
-
     int file = 0, rank = 0;
 
     for(char symbol : base)
@@ -34,11 +32,17 @@ void Fen::ReadFen(std::string fen, Board *board)
                 int index = rank * 8 + file;
 
                 bool pieceColor = isupper(symbol);
-                Board::PieceType type = pieces[tolower(symbol)];
+                Board::PieceType type = ParsePieceType(symbol);
 
                 board->PlacePiece(type, &(*board->GetTiles())[index], pieceColor, symbol);
                 file++;
             }
         }
     }
+}
+
+Board::PieceType Fen::ParsePieceType(char symbol)
+{
+    std::map<char, Board::PieceType> pieces{ {'k', Board::King} };
+    return pieces[tolower(symbol)];
 }

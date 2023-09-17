@@ -31,6 +31,12 @@
     <ClInclude Include="src\Board\Board.h" />
     <ClInclude Include="src\Util\Util.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="assets\title.txt">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+    </Text>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

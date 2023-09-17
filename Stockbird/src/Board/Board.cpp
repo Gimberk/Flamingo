@@ -25,7 +25,7 @@ std::vector<Tile> Board::SetBoard()
 /// </summary>
 void Board::PrintBoard()
 {
-	system("cls");
+	//system("cls");
 
 	std::string board;
 
@@ -38,11 +38,12 @@ void Board::PrintBoard()
 			board += "\n";
 		}
 		board += tile.ToString();
+		//board += std::to_string(tile.GetIndex());
 		board += " ";
 		file++;
 	}
 
-	std::cout << board << std::endl;
+	std::cout << board << std::endl << std::endl;
 }
 
 /// <summary>
@@ -51,7 +52,7 @@ void Board::PrintBoard()
 /// <param name="moves"></param>
 void Board::PrintBoardWithMoves(std::vector<Move> moves)
 {
-	system("cls");
+	//system("cls");
 
 	std::string board;
 
@@ -66,6 +67,8 @@ void Board::PrintBoardWithMoves(std::vector<Move> moves)
 
 		if (MoveGeneration::Contains(tile.GetIndex(), moves)) board += "@";
 		else board += tile.ToString();
+
+		//board += std::to_string(tile.GetIndex());
 
 		board += " ";
 		file++;
@@ -91,11 +94,11 @@ Piece Board::PlacePiece(Board::PieceType type, Tile *tile, bool color, char iden
 		directions = { -9, -8, -7, -1, 1, 7, 8, 9 };
 	}
 
-	Piece piece(0, color, type, identifier, directions, tile->GetIndex());
+	Piece piece(static_cast<int>(pieces.size()), color, type, identifier, directions, tile->GetIndex());
 	(*tile->GetPiece()) = piece;
 	tile->occupied = true;
 
-	pieces.push_back(piece);
+	pieces.insert(pieces.begin(), std::pair<int, Piece>(pieces.size(), piece));
 	return piece;
 
 }
@@ -110,4 +113,29 @@ bool Board::Contains(int index)
 	for (Tile t : tiles)
 		if (t.GetIndex() == index) return true;
 	return false;
+}
+
+void Board::MakeMove(Move move)
+{
+	tiles[move.start].occupied = false;
+	(*tiles[move.start].GetPiece()) = Piece();
+	tiles[move.end].occupied = true;
+	(*tiles[move.end].GetPiece()) = pieces[move.piece];
+
+	pieces[move.piece].tileIndex = move.end;
+
+	// There was a taken piece
+	if (move.takenPiece != -1)
+	{
+		pieces.erase(move.takenPiece);
+	}
+
+	system("cls");
+	PrintTitle();
+	PrintBoard();
+}
+
+void Board::UnMakeMove (Move move)
+{
+
 }
