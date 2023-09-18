@@ -1,2 +1,2 @@
-# Stockbird
+# Flamingo
 This is a chess engine, written in c++, and destined to overtake stockfish...
