@@ -3,12 +3,14 @@
 #include "Board/Fen.h"
 #include "Piece/MoveGeneration.h"
 
-#include<string>
-#include <cstdlib>
+#include <string>
+#include <windows.h>
+#include <strsafe.h>
+
 using namespace std;
 
 //const string baseFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
-const string baseFen = "8/8/8/5Kk";
+const string baseFen = "8/8/8/4kKK";
 
 string title;
 
@@ -48,11 +50,22 @@ Move ParseNotation(string n, Board *board)
 
 	char identifier = n[0];
 
-	for (pair<int, Piece> pie : (*board->GetPieces())) if (pie.second.GetIdentifier() == identifier) possibilities.push_back(pie.second);
-
 	if (t == t1)
 	{
 		int end = ParseSquare(n.substr(1));
+		for (pair<int, Piece> pie : (*board->GetPieces()))
+		{
+			if (pie.second.GetIdentifier() != identifier) continue;
+
+			for (Move pMove : MoveGeneration::GeneratePsuedoLegalMoves(pie.second, (*board)))
+			{
+				if (pMove.end == end)
+				{
+					possibilities.push_back(pie.second);
+					break;
+				}
+			}
+		}
 		if (end == -1)
 		{
 			return Move(-1, -1, -1, -1);
@@ -80,6 +93,19 @@ Move ParseNotation(string n, Board *board)
 	else if (t == t2)
 	{
 		int end = ParseSquare(n.substr(1));
+		for (pair<int, Piece> pie : (*board->GetPieces()))
+		{
+			if (pie.second.GetIdentifier() != identifier) continue;
+
+			for (Move pMove : MoveGeneration::GeneratePsuedoLegalMoves(pie.second, (*board)))
+			{
+				if (pMove.end == end)
+				{
+					possibilities.push_back(pie.second);
+					break;
+				}
+			}
+		}
 		if (end == -1)
 		{
 			return Move(-1, -1, -1, -1);
@@ -104,6 +130,100 @@ Move ParseNotation(string n, Board *board)
 		cout << "Illegal Move" << endl;
 		return Move(-1, -1, -1, -1);
 	}
+	else if (t == t3)
+	{
+		int end = ParseSquare(n.substr(4));
+		for (pair<int, Piece> pie : (*board->GetPieces()))
+		{
+			if (pie.second.GetIdentifier() != identifier) continue;
+
+			for (Move pMove : MoveGeneration::GeneratePsuedoLegalMoves(pie.second, (*board)))
+			{
+				if (pMove.end == end)
+				{
+					possibilities.push_back(pie.second);
+					break;
+				}
+			}
+		}
+		int start = ParseSquare(n.substr(1, 2));
+		if (end == -1)
+		{
+			return Move(-1, -1, -1, -1);
+		}
+
+		if (possibilities.size() <= 1)
+		{
+			cout << "Invalid Algebraic Notation" << endl;
+			return Move(-1, -1, -1, -1);
+		}
+
+		if ((*board->GetTiles())[end].GetPiece()->tileIndex == -1)
+		{
+			cout << "Invalid Algebraic Notation" << endl;
+			return Move(-1, -1, -1, -1);
+		}
+
+		Piece piece = (*(*board->GetTiles())[start].GetPiece());
+		Move ourMove = Move(start, end, piece.index, -1);
+		piece.tileIndex = start;
+
+		for (Move move : MoveGeneration::GeneratePsuedoLegalMoves(piece, (*board)))
+		{
+			move.ToString();
+			if (move.Equals(ourMove)) return ourMove;
+		}
+
+		cout << "Illegal Move" << endl;
+		return Move(-1, -1, -1, -1);
+	}
+	else if (t == t4)
+	{
+		int end = ParseSquare(n.substr(3));
+		for (pair<int, Piece> pie : (*board->GetPieces()))
+		{
+			if (pie.second.GetIdentifier() != identifier) continue;
+
+			for (Move pMove : MoveGeneration::GeneratePsuedoLegalMoves(pie.second, (*board)))
+			{
+				if (pMove.end == end) 
+				{
+					possibilities.push_back(pie.second);
+					break;
+				}
+			}
+		}
+		int start = ParseSquare(n.substr(1, 2));
+		if (end == -1)
+		{
+			return Move(-1, -1, -1, -1);
+		}
+
+		if (possibilities.size() <= 1)
+		{
+			cout << "Invalid Algebraic Notation" << endl;
+			return Move(-1, -1, -1, -1);
+		}
+
+		if ((*board->GetTiles())[end].GetPiece()->tileIndex != -1)
+		{
+			cout << "Invalid Algebraic Notation" << endl;
+			return Move(-1, -1, -1, -1);
+		}
+
+		Piece piece = (*(*board->GetTiles())[start].GetPiece());
+		Move ourMove = Move(start, end, piece.index, -1);
+		piece.tileIndex = start;
+
+		for (Move move : MoveGeneration::GeneratePsuedoLegalMoves(piece, (*board)))
+		{
+			move.ToString();
+			if (move.Equals(ourMove)) return ourMove;
+		}
+
+		cout << "Illegal Move" << endl;
+		return Move(-1, -1, -1, -1);
+	}
 
 	cout << "Invalid Algebraic Notation" << endl;
 	return Move(-1, -1, -1, -1);
@@ -111,6 +231,11 @@ Move ParseNotation(string n, Board *board)
 
 int main()
 {
+	// Set Console Title
+	TCHAR consoleTitle[MAX_PATH];
+	StringCchPrintf(consoleTitle, MAX_PATH, TEXT("Flamingo"));
+	SetConsoleTitle(consoleTitle);
+
 	PrintTitle();
 
 	Board board;
@@ -124,10 +249,6 @@ int main()
 		cin >> input;
 		Move move = ParseNotation(input, &board);
 		if (move.end == -1) continue;
-		cout << "Your Move End Destination Is: " << move.end << endl;
-		cout << "Your Move Start Destination Is: " << move.start << endl;
-		cout << "Your Move Piece Is: " << move.piece << endl;
-		cout << "Your Move Taken Piece Is: " << move.takenPiece << endl;
 		board.MakeMove(move);
 	}
 

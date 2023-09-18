@@ -105,6 +105,13 @@ public:
 	{
 		return other.end == end && other.start == start && other.piece == piece;
 	}
+
+	void ToString()
+	{
+		std::cout << start << std::endl;
+		std::cout << end << std::endl;
+		std::cout << piece << std::endl;
+	}
 };
 
 class Board
