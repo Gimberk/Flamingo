@@ -11,11 +11,13 @@ class Piece
 public:
 	int index;
 	int tileIndex;
+	bool moved;
 	bool color;
 	int type;
 
 	Piece()
 	{
+		moved = false;
 		tileIndex = -1;
 		identifier = ' ';
 		index = -1;
@@ -26,6 +28,7 @@ public:
 
 	Piece(int index, bool color, int type, char identifier, std::vector<int> directions, int tileIndex)
 	{
+		moved = false;
 		this->index = index;
 		this->color = color;
 		this->type = type;
@@ -93,12 +96,15 @@ public:
 	int piece;
 	int takenPiece;
 
-	Move(int start, int end, int piece, int takenPiece)
+	int castle;
+
+	Move(int start, int end, int piece, int takenPiece, int castle = 0)
 	{
 		this->start = start;
 		this->end = end;
 		this->piece = piece;
 		this->takenPiece = takenPiece;
+		this->castle = castle;
 	}
 
 	bool Equals(Move other)
@@ -118,14 +124,18 @@ class Board
 {
 	std::vector<Tile> tiles;
 	std::map<int, Piece> pieces;
+
+	bool turn = true;
 public:
 	enum PieceType
 	{
-		King = 0
+		King = 0, Knight = 1, Queen = 2, Rook = 3, Bishop = 4
 	};
 
 	void PrintBoard();
 	void PrintBoardWithMoves(std::vector<Move> moves);
+
+	bool GetTurn() { return turn; }
 
 	Piece PlacePiece(PieceType type, Tile *tile, bool color, char identifier);
 
@@ -138,8 +148,10 @@ public:
 	static std::vector<Tile> SetBoard();
 
 	void MakeMove(Move move);
-
 	void UnMakeMove(Move move);
+
+	Piece GetWhiteKing();
+	Piece GetBlackKing();
 
 	Board() { tiles = SetBoard(); }
 };

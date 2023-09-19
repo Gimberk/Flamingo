@@ -60,6 +60,15 @@ bool IsEighthRank(int index)
     return (index + 1) % 8 == 0;
 }
 
+bool IsSecondRank(int index)
+{
+    return (index - 1) % 8 == 0;
+}
+bool IsSeventhRank(int index)
+{
+    return (index + 2) % 8 == 0;
+}
+
 int GetIndexOf(char file, int index)
 {
     std::vector<int> a{ 56, 48, 40, 32, 24, 16, 8, 0 };

@@ -9,12 +9,12 @@
 
 using namespace std;
 
-//const string baseFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
-const string baseFen = "8/8/8/4kKK";
+const string baseFen = "rnbqkbnr/8/8/8/8/8/8/R3K2R";
+//const string baseFen = "8/8/8/4kKK";
 
 string title;
 
-Move ParseNotation(string n, Board *board)
+Move ParseNotation(string n, Board board)
 {
 	/*
 		These are the lengths of the different algebraic notations:
@@ -22,6 +22,8 @@ Move ParseNotation(string n, Board *board)
 		2. Qxe4
 		3. Qa4xe4
 		4. Qa4e4
+		5. O-O
+		6. O-O-O
 	*/
 	const int t1 = 3;
 	const int t2 = 4;
@@ -50,14 +52,31 @@ Move ParseNotation(string n, Board *board)
 
 	char identifier = n[0];
 
+	if (n == "O-O")
+	{
+		Piece piece = board.GetTurn() ? board.GetWhiteKing() : board.GetBlackKing();
+
+		Move ourMove = Move(piece.tileIndex, piece.tileIndex + 2, piece.index, -1);
+
+		for (Move move : MoveGeneration::GeneratePsuedoLegalMoves(piece, board)) if (move.Equals(ourMove)) return move;
+	}
+	else if (n == "O-O-O")
+	{
+		Piece piece = board.GetTurn() ? board.GetWhiteKing() : board.GetBlackKing();
+
+		Move ourMove = Move(piece.tileIndex, piece.tileIndex - 2, piece.index, -1);
+
+		for (Move move : MoveGeneration::GeneratePsuedoLegalMoves(piece, board)) if (move.Equals(ourMove)) return move;
+	}
+
 	if (t == t1)
 	{
 		int end = ParseSquare(n.substr(1));
-		for (pair<int, Piece> pie : (*board->GetPieces()))
+		for (pair<int, Piece> pie : (*board.GetPieces()))
 		{
 			if (pie.second.GetIdentifier() != identifier) continue;
 
-			for (Move pMove : MoveGeneration::GeneratePsuedoLegalMoves(pie.second, (*board)))
+			for (Move pMove : MoveGeneration::GeneratePsuedoLegalMoves(pie.second, board))
 			{
 				if (pMove.end == end)
 				{
@@ -77,7 +96,7 @@ Move ParseNotation(string n, Board *board)
 			return Move(-1, -1, -1, -1);
 		}
 
-		if ((*board->GetTiles())[end].GetPiece()->tileIndex != -1)
+		if ((*board.GetTiles())[end].GetPiece()->tileIndex != -1)
 		{
 			cout << "Invalid Algebraic Notation" << endl;
 			return Move(-1, -1, -1, -1);
@@ -85,7 +104,7 @@ Move ParseNotation(string n, Board *board)
 
 		Move ourMove = Move(possibilities[0].tileIndex, end, possibilities[0].index, -1);
 
-		for (Move move : MoveGeneration::GeneratePsuedoLegalMoves(possibilities[0], (*board))) if (move.Equals(ourMove)) return ourMove;
+		for (Move move : MoveGeneration::GeneratePsuedoLegalMoves(possibilities[0], board)) if (move.Equals(ourMove)) return ourMove;
 
 		cout << "Illegal Move" << endl;
 		return Move(-1, -1, -1, -1);
@@ -93,11 +112,11 @@ Move ParseNotation(string n, Board *board)
 	else if (t == t2)
 	{
 		int end = ParseSquare(n.substr(1));
-		for (pair<int, Piece> pie : (*board->GetPieces()))
+		for (pair<int, Piece> pie : (*board.GetPieces()))
 		{
 			if (pie.second.GetIdentifier() != identifier) continue;
 
-			for (Move pMove : MoveGeneration::GeneratePsuedoLegalMoves(pie.second, (*board)))
+			for (Move pMove : MoveGeneration::GeneratePsuedoLegalMoves(pie.second, board))
 			{
 				if (pMove.end == end)
 				{
@@ -117,15 +136,15 @@ Move ParseNotation(string n, Board *board)
 			return Move(-1, -1, -1, -1);
 		}
 
-		if ((*board->GetTiles())[end].GetPiece()->tileIndex == -1)
+		if ((*board.GetTiles())[end].GetPiece()->tileIndex == -1)
 		{
 			cout << "Invalid Algebraic Notation" << endl;
 			return Move(-1, -1, -1, -1);
 		}
 
-		Move ourMove = Move(possibilities[0].tileIndex, end, possibilities[0].index, (*board->GetTiles())[end].GetPiece()->index);
+		Move ourMove = Move(possibilities[0].tileIndex, end, possibilities[0].index, (*board.GetTiles())[end].GetPiece()->index);
 
-		for (Move move : MoveGeneration::GeneratePsuedoLegalMoves(possibilities[0], (*board))) if (move.Equals(ourMove)) return ourMove;
+		for (Move move : MoveGeneration::GeneratePsuedoLegalMoves(possibilities[0], board)) if (move.Equals(ourMove)) return ourMove;
 
 		cout << "Illegal Move" << endl;
 		return Move(-1, -1, -1, -1);
@@ -133,11 +152,11 @@ Move ParseNotation(string n, Board *board)
 	else if (t == t3)
 	{
 		int end = ParseSquare(n.substr(4));
-		for (pair<int, Piece> pie : (*board->GetPieces()))
+		for (pair<int, Piece> pie : (*board.GetPieces()))
 		{
 			if (pie.second.GetIdentifier() != identifier) continue;
 
-			for (Move pMove : MoveGeneration::GeneratePsuedoLegalMoves(pie.second, (*board)))
+			for (Move pMove : MoveGeneration::GeneratePsuedoLegalMoves(pie.second, board))
 			{
 				if (pMove.end == end)
 				{
@@ -158,17 +177,17 @@ Move ParseNotation(string n, Board *board)
 			return Move(-1, -1, -1, -1);
 		}
 
-		if ((*board->GetTiles())[end].GetPiece()->tileIndex == -1)
+		if ((*board.GetTiles())[end].GetPiece()->tileIndex == -1)
 		{
 			cout << "Invalid Algebraic Notation" << endl;
 			return Move(-1, -1, -1, -1);
 		}
 
-		Piece piece = (*(*board->GetTiles())[start].GetPiece());
+		Piece piece = (*(*board.GetTiles())[start].GetPiece());
 		Move ourMove = Move(start, end, piece.index, -1);
 		piece.tileIndex = start;
 
-		for (Move move : MoveGeneration::GeneratePsuedoLegalMoves(piece, (*board)))
+		for (Move move : MoveGeneration::GeneratePsuedoLegalMoves(piece, board))
 		{
 			move.ToString();
 			if (move.Equals(ourMove)) return ourMove;
@@ -180,11 +199,11 @@ Move ParseNotation(string n, Board *board)
 	else if (t == t4)
 	{
 		int end = ParseSquare(n.substr(3));
-		for (pair<int, Piece> pie : (*board->GetPieces()))
+		for (pair<int, Piece> pie : (*board.GetPieces()))
 		{
 			if (pie.second.GetIdentifier() != identifier) continue;
 
-			for (Move pMove : MoveGeneration::GeneratePsuedoLegalMoves(pie.second, (*board)))
+			for (Move pMove : MoveGeneration::GeneratePsuedoLegalMoves(pie.second, board))
 			{
 				if (pMove.end == end) 
 				{
@@ -205,17 +224,17 @@ Move ParseNotation(string n, Board *board)
 			return Move(-1, -1, -1, -1);
 		}
 
-		if ((*board->GetTiles())[end].GetPiece()->tileIndex != -1)
+		if ((*board.GetTiles())[end].GetPiece()->tileIndex != -1)
 		{
 			cout << "Invalid Algebraic Notation" << endl;
 			return Move(-1, -1, -1, -1);
 		}
 
-		Piece piece = (*(*board->GetTiles())[start].GetPiece());
+		Piece piece = (*(*board.GetTiles())[start].GetPiece());
 		Move ourMove = Move(start, end, piece.index, -1);
 		piece.tileIndex = start;
 
-		for (Move move : MoveGeneration::GeneratePsuedoLegalMoves(piece, (*board)))
+		for (Move move : MoveGeneration::GeneratePsuedoLegalMoves(piece, board))
 		{
 			move.ToString();
 			if (move.Equals(ourMove)) return ourMove;
@@ -240,14 +259,14 @@ int main()
 
 	Board board;
 	Fen::ReadFen(baseFen, &board);
-	board.PrintBoard();
+	board.PrintBoardWithMoves(MoveGeneration::GeneratePsuedoLegalMoves((*board.GetPieces())[9], board));
 
 	while (true)
 	{
 		cout << endl << "Enter Your Move: ";
 		string input;
 		cin >> input;
-		Move move = ParseNotation(input, &board);
+		Move move = ParseNotation(input, board);
 		if (move.end == -1) continue;
 		board.MakeMove(move);
 	}

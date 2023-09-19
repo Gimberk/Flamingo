@@ -43,6 +43,7 @@ void Fen::ReadFen(std::string fen, Board *board)
 
 Board::PieceType Fen::ParsePieceType(char symbol)
 {
-    std::map<char, Board::PieceType> pieces{ {'k', Board::King} };
+    std::map<char, Board::PieceType> pieces{ {'k', Board::King}, {'n', Board::Knight}, 
+        {'q', Board::Queen}, {'r', Board::Rook}, {'b', Board::Bishop} };
     return pieces[tolower(symbol)];
 }

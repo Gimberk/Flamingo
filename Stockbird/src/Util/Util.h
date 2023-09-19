@@ -12,3 +12,5 @@ int ParseSquare(std::string str);
 
 bool IsFirstRank(int index);
 bool IsEighthRank(int index);
+bool IsSecondRank(int index);
+bool IsSeventhRank(int index);
